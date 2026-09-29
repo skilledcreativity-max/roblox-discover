@@ -1,8 +1,8 @@
 import os
 import requests
+from datetime import datetime, timedelta, timezone
 from supabase import create_client, Client
 
-# 1. Connect to Supabase
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
@@ -27,16 +27,12 @@ def fetch_and_save_games():
         return
         
     games_dict = data.get("games", {})
-    print(f"Total available games: {len(games_dict)}")
-
-    # Sort all games by active player count (CCU) descending
     sorted_games = sorted(
         games_dict.items(),
         key=lambda item: item[1][1] if len(item[1]) > 1 else 0,
         reverse=True
     )
 
-    # Change number here: top 1,000 most active games
     top_games = sorted_games[:1000]
     print(f"Processing top {len(top_games)} games...")
 
@@ -68,17 +64,21 @@ def fetch_and_save_games():
         except Exception:
             continue
 
-    # Batch save into Supabase in chunks of 500
+    # Batch save in chunks of 500
     chunk_size = 500
-    print("Saving games to Supabase in batches...")
     for i in range(0, len(games_rows), chunk_size):
-        g_chunk = games_rows[i:i + chunk_size]
-        s_chunk = snapshot_rows[i:i + chunk_size]
-        supabase.table("games").upsert(g_chunk).execute()
-        supabase.table("game_snapshots").insert(s_chunk).execute()
-        print(f"Uploaded batch {i // chunk_size + 1}...")
+        supabase.table("games").upsert(games_rows[i:i + chunk_size]).execute()
+        supabase.table("game_snapshots").insert(snapshot_rows[i:i + chunk_size]).execute()
 
     print(f"Successfully saved {len(games_rows)} games into your database!")
+
+    # Auto-prune snapshots older than 14 days to keep DB fast and free forever
+    try:
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=14)).isoformat()
+        supabase.table("game_snapshots").delete().lt("recorded_at", cutoff).execute()
+        print("Pruning check: cleaned snapshots older than 14 days.")
+    except Exception as e:
+        print(f"Notice during pruning: {e}")
 
 if __name__ == "__main__":
     fetch_and_save_games()
