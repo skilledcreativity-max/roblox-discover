@@ -30,15 +30,14 @@ def fetch_and_save_games():
     print(f"Total available games: {len(games_dict)}")
 
     # Sort all games by active player count (CCU) descending
-    # Format of each game entry: [name, player_count, thumbnail_url]
     sorted_games = sorted(
         games_dict.items(),
         key=lambda item: item[1][1] if len(item[1]) > 1 else 0,
         reverse=True
     )
 
-    # Take the top 250 most active games
-    top_games = sorted_games[:250]
+    # Change number here: top 1,000 most active games
+    top_games = sorted_games[:1000]
     print(f"Processing top {len(top_games)} games...")
 
     games_rows = []
@@ -66,13 +65,19 @@ def fetch_and_save_games():
                 "upvotes": 0,
                 "downvotes": 0
             })
-        except Exception as e:
+        except Exception:
             continue
 
-    # Batch save into Supabase
-    print("Saving games to Supabase...")
-    supabase.table("games").upsert(games_rows).execute()
-    supabase.table("game_snapshots").insert(snapshot_rows).execute()
+    # Batch save into Supabase in chunks of 500
+    chunk_size = 500
+    print("Saving games to Supabase in batches...")
+    for i in range(0, len(games_rows), chunk_size):
+        g_chunk = games_rows[i:i + chunk_size]
+        s_chunk = snapshot_rows[i:i + chunk_size]
+        supabase.table("games").upsert(g_chunk).execute()
+        supabase.table("game_snapshots").insert(s_chunk).execute()
+        print(f"Uploaded batch {i // chunk_size + 1}...")
+
     print(f"Successfully saved {len(games_rows)} games into your database!")
 
 if __name__ == "__main__":
