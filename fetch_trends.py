@@ -16,10 +16,10 @@ HEADERS = {
 }
 
 def fetch_and_save_games():
-    print("Fetching top games from index...")
+    print("Fetching complete game index from Rolimons...")
     url = "https://api.rolimons.com/games/v1/gamelist"
     
-    res = requests.get(url, headers=HEADERS, timeout=20)
+    res = requests.get(url, headers=HEADERS, timeout=25)
     data = res.json()
     
     if not data.get("success"):
@@ -27,14 +27,18 @@ def fetch_and_save_games():
         return
         
     games_dict = data.get("games", {})
+    print(f"Total available games in universe: {len(games_dict)}")
+
+    # Sort all games by active player count (CCU) descending
     sorted_games = sorted(
         games_dict.items(),
         key=lambda item: item[1][1] if len(item[1]) > 1 else 0,
         reverse=True
     )
 
-    top_games = sorted_games[:1000]
-    print(f"Processing top {len(top_games)} games...")
+    # Track ALL games returned by the API (5,000+)
+    top_games = sorted_games
+    print(f"Processing all {len(top_games)} games into database...")
 
     games_rows = []
     snapshot_rows = []
@@ -64,15 +68,19 @@ def fetch_and_save_games():
         except Exception:
             continue
 
-    # Batch save in chunks of 500
+    # Batch save in chunks of 500 to keep network fast
     chunk_size = 500
+    print(f"Saving {len(games_rows)} games to Supabase in batches...")
     for i in range(0, len(games_rows), chunk_size):
-        supabase.table("games").upsert(games_rows[i:i + chunk_size]).execute()
-        supabase.table("game_snapshots").insert(snapshot_rows[i:i + chunk_size]).execute()
+        g_chunk = games_rows[i:i + chunk_size]
+        s_chunk = snapshot_rows[i:i + chunk_size]
+        supabase.table("games").upsert(g_chunk).execute()
+        supabase.table("game_snapshots").insert(s_chunk).execute()
+        print(f"Uploaded batch {i // chunk_size + 1} of {(len(games_rows) // chunk_size) + 1}...")
 
     print(f"Successfully saved {len(games_rows)} games into your database!")
 
-    # Auto-prune snapshots older than 14 days to keep DB fast and free forever
+    # Auto-prune snapshots older than 14 days
     try:
         cutoff = (datetime.now(timezone.utc) - timedelta(days=14)).isoformat()
         supabase.table("game_snapshots").delete().lt("recorded_at", cutoff).execute()
