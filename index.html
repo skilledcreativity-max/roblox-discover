@@ -440,34 +440,105 @@
       document.getElementById("m-youtube-link").href = `https://www.youtube.com/results?search_query=${encodedName}`;
       document.getElementById("m-play-link").href = `https://www.roblox.com/games/${game.universe_id}`;
 
+      // --- SMART GENRE & THEME DETECTOR ---
+      const nameLower = game.name.toLowerCase();
       const words = game.name.split(" ");
+      const isSingleWord = words.length === 1;
       const hasEmoji = /[\p{Emoji}]/u.test(game.name);
-      let titleAdvice = `"${game.name}" uses algorithmic framing. `;
-      if (hasEmoji) titleAdvice += `It uses front-loaded bracketed emojis to capture search impressions. `;
-      titleAdvice += `The primary hook word ("${words[0]}") commands immediate player action.`;
+
+      let genre = "general";
+      if (nameLower.match(/voxel|craft|build|block|mine|island|sandbox/)) genre = "sandbox";
+      else if (nameLower.match(/steal|thief|rob|heist|take/)) genre = "steal";
+      else if (nameLower.match(/brainrot|skibidi|toilet|sigma|meme/)) genre = "meme";
+      else if (nameLower.match(/sim|simulator|clicker|tapping|rebirth/)) genre = "simulator";
+      else if (nameLower.match(/tycoon|factory|empire/)) genre = "tycoon";
+      else if (nameLower.match(/horror|scary|doors|mimic|escape|night/)) genre = "horror";
+      else if (nameLower.match(/rp|roleplay|brookhaven|city|life/)) genre = "roleplay";
+
+      // 1. Contextual Title Analysis
+      let titleAdvice = "";
+      if (isSingleWord) {
+        titleAdvice = `"${game.name}" uses a high-end minimalist branding strategy. Single-word titles (like Doors, Voxels, Brookhaven) create natural curiosity and feel like standalone premium games rather than cheap spam. It avoids keyword stuffing in favor of a memorable brand identity.`;
+      } else if (genre === "steal" || genre === "meme") {
+        titleAdvice = `"${game.name}" uses viral action-bait framing. Leading with an aggressive trigger verb ("${words[0]}") or trending internet meme immediately sets a goal for younger players before they even read the description.`;
+      } else if (genre === "sandbox") {
+        titleAdvice = `"${game.name}" uses clean descriptive naming. It signals creative freedom and mechanics immediately to fans of sandbox and construction games without gimmicks.`;
+      } else {
+        titleAdvice = `"${game.name}" uses clear genre-signaling. It communicates the exact theme within the first 3 words so searchers know the gameplay within a split-second.`;
+      }
+      if (hasEmoji) titleAdvice += ` Bracketed visual tags are included to pop out in the dark-themed Roblox search results.`;
       document.getElementById("m-title-analysis").innerText = titleAdvice;
 
-      document.getElementById("m-icon-analysis").innerText = 
-        `• 3-Color Contrast Rule: Neon primary character rendered over a dark, high-depth scene.\n` +
-        `• 65%+ Subject Rule: The central character or prize occupies more than two-thirds of the icon frame.\n` +
-        `• Action Freeze-Frame: The thumbnail captures a moment of active tension (holding loot or escaping danger).`;
+      // 2. Contextual Thumbnail Analysis
+      let iconAdvice = "";
+      if (genre === "sandbox" || isSingleWord) {
+        iconAdvice = 
+          `• Minimalist Object Focus: Instead of chaotic character clutter, this uses a clean, isolated 3D asset with high contrast against a dark background.\n` +
+          `• Readability at Micro-Scale: Even on a tiny phone screen (100x100px), players instantly recognize the blocky voxel theme.\n` +
+          `• Nostalgia & Aesthetic Trigger: Earthy greens and browns signal Minecraft/creative vibes to sandbox enthusiasts.`;
+      } else if (genre === "steal" || genre === "meme") {
+        iconAdvice = 
+          `• High-Saturation Click Magnet: Uses bright neon foreground colors (lime green, neon yellow) to maximize Click-Through-Rate (CTR).\n` +
+          `• Action Freeze-Frame: Shows the character actively carrying or running away with the prize.\n` +
+          `• Reaction Face: Large avatar face with exaggerated emotion directly facing the camera.`;
+      } else if (genre === "horror") {
+        iconAdvice = 
+          `• Low-Key Lighting Contrast: Heavy shadows with a glowing focal point (eyes, flashlight, or doorway).\n` +
+          `• Fear of the Unknown: Hides the full monster/setting to force players to join to see what happens.`;
+      } else {
+        iconAdvice = 
+          `• Clear Focal Point: The primary subject occupies >60% of the thumbnail canvas.\n` +
+          `• Color Contrast: Uses complementary colors to stand out in the discover carousel.\n` +
+          `• Clean Render: High-resolution 3D lighting without messy unreadable text.`;
+      }
+      document.getElementById("m-icon-analysis").innerText = iconAdvice;
 
-      document.getElementById("m-loop-analysis").innerText = 
-        `1. Seconds 0-10: Player spawns directly in the action with zero text tutorial.\n` +
-        `2. Seconds 10-45: First upgrade or unlock is achieved within under a minute.\n` +
-        `3. Ongoing Hook: Leaderboard status or overhead titles display progress to other players in the server.`;
+      // 3. Contextual Retention Loop
+      let loopAdvice = "";
+      if (genre === "sandbox") {
+        loopAdvice = 
+          `1. Instant Freedom (0-10s): Player immediately has tools in hand and can place or break their first block without tutorials.\n` +
+          `2. Creative Milestone (1-3m): Building a small structure or discovering a new material creates intrinsic accomplishment.\n` +
+          `3. Save & Share: The ability to save creations or show them to other players in the server keeps players returning daily.`;
+      } else if (genre === "steal" || genre === "meme") {
+        loopAdvice = 
+          `1. First Action (0-5s): Spawn in and see targets/loot immediately.\n` +
+          `2. Dopamine Hit (10-30s): Snatching an item triggers a loud sound effect and visual confetti.\n` +
+          `3. Social Flex: Showing off high-tier or rare stolen items on an overhead badge keeps players grinding.`;
+      } else if (genre === "tycoon" || genre === "simulator") {
+        loopAdvice = 
+          `1. Instant Dopamine (0-5s): Step on button or click once to see numbers tick up.\n` +
+          `2. Short-term Ladder (30s): First upgrade costs very little, creating a loop of "just one more upgrade".\n` +
+          `3. Rebirth/Prestige: Long-term multiplier that resets progress in exchange for permanent speed boosts.`;
+      } else {
+        loopAdvice = 
+          `1. Fast Onboarding: Player is participating in the core game loop within 15 seconds of loading.\n` +
+          `2. Visible Goal: Clear UI bar showing next unlock or stage progress.\n` +
+          `3. Retention Driver: Daily rewards or session milestones that incentivize staying 15+ minutes.`;
+      }
+      document.getElementById("m-loop-analysis").innerText = loopAdvice;
 
-      const baseTopic = words[1] || words[0] || "Brainrot";
-      document.getElementById("m-twist-idea").innerHTML = 
-        `To beat your 280k visit record with a twist on this concept:\n\n` +
-        `• <b>Suggested Working Title:</b> [⚡] Steal The ${baseTopic} OR [SECRET] Escape The ${baseTopic}\n` +
-        `• <b>The Twist:</b> Keep the core loop, but add a 1-in-1,000 "Secret Rare" aura or item drop with custom particle effects and a TikTok-friendly sound effect.`;
+      // 4. Tailored Game Twist Idea
+      let twistAdvice = "";
+      if (genre === "sandbox") {
+        twistAdvice = 
+          `How to make a viral hit in this space:\n\n` +
+          `• <b>The Flaw in Basic Sandbox Games:</b> Players get bored once they finish building because there's no danger.\n` +
+          `• <b>Your Viral Twist:</b> Combine Voxels with a Survival Hazard (e.g. <i>"Build a Voxel Base Before The Tsunami / Monster Attacks"</i>). Players have 2 minutes of calm voxel building, followed by 60 seconds of physics destruction testing their base!`;
+      } else if (genre === "steal" || genre === "meme") {
+        twistAdvice = 
+          `How to beat your 280k visit record:\n\n` +
+          `• <b>Suggested Title:</b> [⚡] Steal The Secret ${words[1] || 'Loot'} OR [OP] Sneak & Steal\n` +
+          `• <b>Your Viral Twist:</b> Add an RNG Rarity Aura to the stolen items (1 in 5,000 chance for an ultra-rare neon item) so players record TikTok videos trying to get rare drops.`;
+      } else {
+        twistAdvice = 
+          `How to adapt this for your next game:\n\n` +
+          `• <b>The Formula:</b> Keep this game's clean core loop, but shorten the onboarding to under 5 seconds.\n` +
+          `• <b>Your Twist:</b> Introduce a competitive leaderboard or trading system that encourages players to invite their friends to show off progress.`;
+      }
+      document.getElementById("m-twist-idea").innerHTML = twistAdvice;
 
       document.getElementById("game-modal").classList.remove("hidden");
-    }
-
-    function closeModal() {
-      document.getElementById("game-modal").classList.add("hidden");
     }
 
     document.getElementById("search-input").addEventListener("input", resetAndRender);
