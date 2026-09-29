@@ -88,15 +88,20 @@
 
     async function loadData() {
       try {
-        // Fetch all games
-        const { data: games, error: gError } = await client.from("games").select("*");
+        // Fetch up to 2,000 games
+        const { data: games, error: gError } = await client
+          .from("games")
+          .select("*")
+          .limit(2000);
+
         if (gError) throw gError;
 
-        // Fetch latest snapshot for player count
+        // Fetch latest snapshots
         const { data: snapshots, error: sError } = await client
           .from("game_snapshots")
           .select("universe_id, playing, recorded_at")
-          .order("recorded_at", { ascending: false });
+          .order("recorded_at", { ascending: false })
+          .limit(5000);
 
         if (sError) throw sError;
 
@@ -113,7 +118,7 @@
           playing: latestStats[g.universe_id] || 0
         }));
 
-        document.getElementById("status-text").innerText = `Live sync active • 250 experiences`;
+        document.getElementById("status-text").innerText = `Live sync active • ${allGames.length} experiences`;
         updateStats();
         renderGames();
       } catch (err) {
