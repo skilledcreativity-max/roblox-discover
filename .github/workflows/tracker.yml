@@ -1,0 +1,27 @@
+name: Roblox Trend Tracker
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Automatically runs every 6 hours
+  workflow_dispatch:      # Allows manual one-click run anytime
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests supabase
+
+      - name: Run Fetch Script
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python fetch_trends.py
