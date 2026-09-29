@@ -249,46 +249,24 @@
 
     async function loadData() {
       try {
-        document.getElementById("status-text").innerText = "Fetching 5,000+ experiences...";
-        
-        // 1. Fetch all games in pages
+        document.getElementById("status-text").innerText = "Loading games...";
+
+        // Fetch games (each row already has playing and growth)
         const games = await fetchAllRows("games", "*", null);
 
-        // 2. Fetch latest snapshot history
-        const snapshots = await fetchAllRows("game_snapshots", "universe_id, playing, recorded_at", "recorded_at");
-
-        const historyMap = {};
-        snapshots.forEach(s => {
-          if (!historyMap[s.universe_id]) historyMap[s.universe_id] = [];
-          historyMap[s.universe_id].push(s);
-        });
-
-        allGames = games.map(g => {
-          const list = historyMap[g.universe_id] || [];
-          const currentCCU = list.length > 0 ? list[0].playing : 0;
-          
-          let velocity = 0;
-          if (list.length >= 2) {
-            const previousCCU = list[1].playing;
-            if (previousCCU > 0) {
-              velocity = Math.round(((currentCCU - previousCCU) / previousCCU) * 100);
-            }
-          }
-
-          return {
-            ...g,
-            playing: currentCCU,
-            velocity: velocity,
-            score: calculateViralScore(currentCCU, velocity)
-          };
-        });
+        allGames = games.map(g => ({
+          ...g,
+          playing: g.playing || 0,
+          velocity: g.growth || 0,
+          score: calculateViralScore(g.playing || 0, g.growth || 0)
+        }));
 
         document.getElementById("status-text").innerText = `Live sync active • ${allGames.length.toLocaleString()} games loaded`;
         updateStats();
         resetAndRender();
       } catch (err) {
         console.error(err);
-        document.getElementById("status-text").innerText = "Error loading database. Check connection.";
+        document.getElementById("status-text").innerText = "Error loading data.";
       }
     }
 
