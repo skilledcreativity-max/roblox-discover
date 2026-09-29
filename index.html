@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roblox Discover | Personal Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background-color: #0b0f19; }
+    .glass-card { background: rgba(18, 24, 38, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.07); }
+    .glass-card:hover { border-color: rgba(59, 130, 246, 0.4); transform: translateY(-2px); }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-[#0e1322]/80 sticky top-0 z-50 backdrop-blur-md px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-white shadow-lg shadow-blue-500/30">
+          R
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            Roblox Discover
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Terminal</span>
+          </h1>
+          <p class="text-xs text-slate-400" id="status-text">Connecting to database...</p>
+        </div>
+      </div>
+
+      <!-- Controls: Search & Sort -->
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="relative flex-1 md:w-72">
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Search experiences..."
+            class="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <select id="sort-select" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="ccu-desc">Highest CCU (Popular)</option>
+          <option value="ccu-asc">Lowest CCU</option>
+          <option value="name-asc">Name (A-Z)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div class="glass-card rounded-xl p-4">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Tracked Games</div>
+        <div id="stat-total-games" class="text-2xl font-bold text-white mt-1">-</div>
+      </div>
+      <div class="glass-card rounded-xl p-4">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Active Players</div>
+        <div id="stat-total-ccu" class="text-2xl font-bold text-emerald-400 mt-1">-</div>
+      </div>
+      <div class="glass-card rounded-xl p-4">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Game Today</div>
+        <div id="stat-top-game" class="text-2xl font-bold text-blue-400 truncate mt-1">-</div>
+      </div>
+    </div>
+
+    <!-- Games Grid -->
+    <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <!-- Loading state cards -->
+      <div class="text-slate-400 text-sm col-span-full text-center py-20">Loading live Roblox experiences...</div>
+    </div>
+  </main>
+
+  <script>
+    // Supabase credentials
+    const SUPABASE_URL = "https://xomudftiyecfgbabditr.supabase.co";
+    // Replace this string with your publishable key if different
+    const SUPABASE_KEY = "sb_publishable_BIGjfOud6hMu5tU8PXt0Xg_rhq-dA4F";
+
+    const { createClient } = supabase;
+    const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let allGames = [];
+
+    async function loadData() {
+      try {
+        // Fetch all games
+        const { data: games, error: gError } = await client.from("games").select("*");
+        if (gError) throw gError;
+
+        // Fetch latest snapshot for player count
+        const { data: snapshots, error: sError } = await client
+          .from("game_snapshots")
+          .select("universe_id, playing, recorded_at")
+          .order("recorded_at", { ascending: false });
+
+        if (sError) throw sError;
+
+        // Map latest playing count to each game
+        const latestStats = {};
+        snapshots.forEach(s => {
+          if (!latestStats[s.universe_id]) {
+            latestStats[s.universe_id] = s.playing;
+          }
+        });
+
+        allGames = games.map(g => ({
+          ...g,
+          playing: latestStats[g.universe_id] || 0
+        }));
+
+        document.getElementById("status-text").innerText = `Live sync active • 250 experiences`;
+        updateStats();
+        renderGames();
+      } catch (err) {
+        console.error(err);
+        document.getElementById("status-text").innerText = "Error loading data. Check API keys.";
+      }
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+      if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+      return num.toLocaleString();
+    }
+
+    function updateStats() {
+      document.getElementById("stat-total-games").innerText = allGames.length;
+      const totalCCU = allGames.reduce((acc, g) => acc + g.playing, 0);
+      document.getElementById("stat-total-ccu").innerText = formatNumber(totalCCU);
+
+      const top = [...allGames].sort((a, b) => b.playing - a.playing)[0];
+      if (top) {
+        document.getElementById("stat-top-game").innerText = top.name;
+      }
+    }
+
+    function renderGames() {
+      const search = document.getElementById("search-input").value.toLowerCase();
+      const sortBy = document.getElementById("sort-select").value;
+
+      let filtered = allGames.filter(g => g.name.toLowerCase().includes(search));
+
+      if (sortBy === "ccu-desc") {
+        filtered.sort((a, b) => b.playing - a.playing);
+      } else if (sortBy === "ccu-asc") {
+        filtered.sort((a, b) => a.playing - b.playing);
+      } else if (sortBy === "name-asc") {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      const grid = document.getElementById("games-grid");
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-16">No games matching "${search}"</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(game => `
+        <div class="glass-card rounded-xl p-4 flex flex-col justify-between transition-all duration-200">
+          <div>
+            <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-slate-900 mb-3 border border-slate-800">
+              <img src="${game.icon_url || 'https://via.placeholder.com/150'}" alt="${game.name}" class="w-full h-full object-cover" loading="lazy" />
+              <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-sm text-[11px] font-semibold text-emerald-400 flex items-center gap-1.5 border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                ${formatNumber(game.playing)} CCU
+              </div>
+            </div>
+            <h3 class="font-bold text-white text-sm line-clamp-1 mb-1" title="${game.name}">${game.name}</h3>
+            <p class="text-xs text-slate-400 mb-3">${game.genre || 'Roblox Experience'}</p>
+          </div>
+          
+          <a
+            href="https://www.roblox.com/games/${game.universe_id}"
+            target="_blank"
+            class="w-full text-center py-2 px-3 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 text-xs font-semibold border border-blue-500/30 transition-colors"
+          >
+            View on Roblox ↗
+          </a>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById("search-input").addEventListener("input", renderGames);
+    document.getElementById("sort-select").addEventListener("change", renderGames);
+
+    loadData();
+  </script>
+</body>
+</html>
