@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roblox Viral Terminal | Pro Game Dev Suite</title>
+  <title>Roblox Viral Terminal | 5,000+ Experiences</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -26,7 +26,7 @@
         <div>
           <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
             Roblox Viral Studio
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase tracking-widest">PRO TERMINAL</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase tracking-widest">5,000+ INDEX</span>
           </h1>
           <p class="text-xs text-slate-400" id="status-text">Connecting to intelligence engine...</p>
         </div>
@@ -39,7 +39,7 @@
           <input
             id="search-input"
             type="text"
-            placeholder="Search titles, tags..."
+            placeholder="Search 5,000+ titles..."
             class="w-full bg-slate-900 border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -47,7 +47,7 @@
         <select id="filter-select" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <option value="all">All Games</option>
           <option value="watchlist">⭐ My Watchlist</option>
-          <option value="gems">💎 Hidden Gems (Under-the-Radar)</option>
+          <option value="gems">💎 Hidden Gems (100 - 5K CCU)</option>
           <option value="fast">🚀 Fastest Growing (Velocity)</option>
           <option value="viral">🔥 Mega-Hits (9.0+ Score)</option>
           <option value="meme">🧠 Meme & Brainrot Trends</option>
@@ -57,6 +57,7 @@
           <option value="score-desc">Highest Viral Score</option>
           <option value="velocity-desc">Highest Growth Velocity (%)</option>
           <option value="ccu-desc">Highest Live CCU</option>
+          <option value="ccu-asc">Lowest Live CCU</option>
           <option value="name-asc">Alphabetical (A-Z)</option>
         </select>
       </div>
@@ -67,7 +68,7 @@
   <main class="max-w-7xl mx-auto px-6 pt-6">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       <div class="glass-card rounded-xl p-4">
-        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Experiences Tracked</div>
+        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Tracked</div>
         <div id="stat-total-games" class="text-2xl font-bold text-white mt-1">-</div>
       </div>
       <div class="glass-card rounded-xl p-4">
@@ -86,11 +87,22 @@
 
     <!-- Games Grid -->
     <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-      <div class="text-slate-400 text-sm col-span-full text-center py-24">Loading viral intelligence feed...</div>
+      <div class="text-slate-400 text-sm col-span-full text-center py-24">Loading 5,000+ Roblox games...</div>
+    </div>
+
+    <!-- Load More Section -->
+    <div id="load-more-container" class="mt-10 flex flex-col items-center justify-center gap-2 hidden">
+      <button
+        onclick="loadMoreGames()"
+        class="py-3 px-8 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 font-bold text-sm border border-indigo-500/40 shadow-lg shadow-indigo-500/10 transition"
+      >
+        Load More Games <i class="fa-solid fa-arrow-down ml-1"></i>
+      </button>
+      <p id="showing-count" class="text-xs text-slate-500"></p>
     </div>
   </main>
 
-  <!-- Viral Analysis Modal -->
+  <!-- Modal -->
   <div id="game-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
     <div class="bg-[#0e1424] border border-slate-700/80 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
       <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg">
@@ -111,12 +123,11 @@
       </div>
 
       <div class="space-y-4 pt-5 text-sm">
-        <!-- Direct TikTok & YouTube Viral Lookup -->
         <div class="bg-gradient-to-r from-pink-950/30 to-purple-950/30 border border-pink-500/30 rounded-xl p-4">
           <div class="text-xs font-bold text-pink-300 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-brands fa-tiktok"></i> Direct Viral Traffic Sleuth
           </div>
-          <p class="text-xs text-slate-300 mb-3">Games go viral because of TikTok sounds and YouTube Shorts. Inspect what creators are uploading about this game:</p>
+          <p class="text-xs text-slate-300 mb-3">Inspect viral videos driving traffic to this game:</p>
           <div class="flex gap-2">
             <a id="m-tiktok-link" href="#" target="_blank" class="flex-1 text-center py-2 px-3 rounded-lg bg-pink-600/30 hover:bg-pink-600/40 text-pink-300 text-xs font-semibold border border-pink-500/30 transition">
               <i class="fa-brands fa-tiktok mr-1"></i> Search on TikTok
@@ -127,7 +138,6 @@
           </div>
         </div>
 
-        <!-- Title Strategy -->
         <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800">
           <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-pen-nib"></i> Title & Hook Strategy
@@ -135,7 +145,6 @@
           <p id="m-title-analysis" class="text-slate-300 leading-relaxed text-xs"></p>
         </div>
 
-        <!-- Thumbnail & CTR Blueprint -->
         <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800">
           <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-image"></i> Thumbnail CTR Blueprint
@@ -143,7 +152,6 @@
           <p id="m-icon-analysis" class="text-slate-300 leading-relaxed text-xs"></p>
         </div>
 
-        <!-- Core Gameplay Loop -->
         <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800">
           <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-rotate"></i> 30-Second Retention Loop
@@ -151,7 +159,6 @@
           <p id="m-loop-analysis" class="text-slate-300 leading-relaxed text-xs"></p>
         </div>
 
-        <!-- Your Twist Idea -->
         <div class="bg-gradient-to-br from-indigo-950/40 via-purple-950/30 to-slate-900/80 rounded-xl p-4 border border-indigo-500/30">
           <div class="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-lightbulb"></i> How You Can Twist This For Your Next Game
@@ -159,10 +166,9 @@
           <p id="m-twist-idea" class="text-slate-200 leading-relaxed text-xs"></p>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex gap-3 pt-2">
           <a id="m-play-link" href="#" target="_blank" class="flex-1 text-center py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition">
-            Test Game in Roblox Studio / Client <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+            Test Game in Roblox Client <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
           </a>
           <button onclick="closeModal()" class="py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
             Close
@@ -181,6 +187,8 @@
     const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let allGames = [];
+    let currentFiltered = [];
+    let visibleCount = 60; // Render 60 at a time for 60fps scrolling
     let watchlist = JSON.parse(localStorage.getItem("roblox_watchlist") || "[]");
 
     function toggleWatchlist(universeId) {
@@ -204,7 +212,6 @@
       else if (playing >= 1000)   base = 5.0 + ((playing - 1000) / 4000) * 1.4;
       else base = Math.max(1.0, (playing / 1000) * 4.9);
 
-      // Boost score if velocity is surging
       if (velocity > 50) base = Math.min(10.0, base + 0.5);
       return base;
     }
@@ -222,21 +229,34 @@
       return num.toLocaleString();
     }
 
+    // Helper: fetch all pages from Supabase so 1,000-row limit never blocks you
+    async function fetchAllRows(table, selectColumns, orderCol = null) {
+      let results = [];
+      let from = 0;
+      const step = 1000;
+      while (true) {
+        let q = client.from(table).select(selectColumns).range(from, from + step - 1);
+        if (orderCol) q = q.order(orderCol, { ascending: false });
+        const { data, error } = await q;
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        results = results.concat(data);
+        if (data.length < step || results.length >= 8000) break;
+        from += step;
+      }
+      return results;
+    }
+
     async function loadData() {
       try {
-        const { data: games, error: gError } = await client.from("games").select("*").limit(2000);
-        if (gError) throw gError;
+        document.getElementById("status-text").innerText = "Fetching 5,000+ experiences...";
+        
+        // 1. Fetch all games in pages
+        const games = await fetchAllRows("games", "*", null);
 
-        // Fetch snapshots ordered by time
-        const { data: snapshots, error: sError } = await client
-          .from("game_snapshots")
-          .select("universe_id, playing, recorded_at")
-          .order("recorded_at", { ascending: false })
-          .limit(6000);
+        // 2. Fetch latest snapshot history
+        const snapshots = await fetchAllRows("game_snapshots", "universe_id, playing, recorded_at", "recorded_at");
 
-        if (sError) throw sError;
-
-        // Group snapshots per game
         const historyMap = {};
         snapshots.forEach(s => {
           if (!historyMap[s.universe_id]) historyMap[s.universe_id] = [];
@@ -247,7 +267,6 @@
           const list = historyMap[g.universe_id] || [];
           const currentCCU = list.length > 0 ? list[0].playing : 0;
           
-          // Calculate growth velocity vs previous snapshot
           let velocity = 0;
           if (list.length >= 2) {
             const previousCCU = list[1].playing;
@@ -264,17 +283,17 @@
           };
         });
 
-        document.getElementById("status-text").innerText = `Live sync active • ${allGames.length} games analyzed`;
+        document.getElementById("status-text").innerText = `Live sync active • ${allGames.length.toLocaleString()} games loaded`;
         updateStats();
-        renderGames();
+        resetAndRender();
       } catch (err) {
         console.error(err);
-        document.getElementById("status-text").innerText = "Error loading data. Check API keys.";
+        document.getElementById("status-text").innerText = "Error loading database. Check connection.";
       }
     }
 
     function updateStats() {
-      document.getElementById("stat-total-games").innerText = allGames.length;
+      document.getElementById("stat-total-games").innerText = allGames.length.toLocaleString();
       const totalCCU = allGames.reduce((acc, g) => acc + g.playing, 0);
       document.getElementById("stat-total-ccu").innerText = formatNumber(totalCCU);
       document.getElementById("stat-watchlist-count").innerText = watchlist.length;
@@ -287,38 +306,55 @@
       }
     }
 
+    function resetAndRender() {
+      visibleCount = 60;
+      renderGames();
+    }
+
+    function loadMoreGames() {
+      visibleCount += 60;
+      renderGames();
+    }
+
     function renderGames() {
       const search = document.getElementById("search-input").value.toLowerCase();
       const filter = document.getElementById("filter-select").value;
       const sortBy = document.getElementById("sort-select").value;
 
-      let filtered = allGames.filter(g => {
+      currentFiltered = allGames.filter(g => {
         const matchesSearch = g.name.toLowerCase().includes(search);
         if (!matchesSearch) return false;
 
         if (filter === "watchlist") return watchlist.includes(g.universe_id);
-        if (filter === "gems") return g.playing >= 1000 && g.playing <= 20000;
+        if (filter === "gems") return g.playing >= 100 && g.playing <= 5000;
         if (filter === "fast") return g.velocity > 0;
         if (filter === "viral") return g.score >= 9.0;
         if (filter === "meme") {
-          const memeTerms = ["steal", "brainrot", "toilet", "skibidi", "egg", "blade", "rng", "tycoon", "tower", "escape", "avatar"];
+          const memeTerms = ["steal", "brainrot", "toilet", "skibidi", "egg", "blade", "rng", "tycoon", "tower", "escape", "avatar", "sigma"];
           return memeTerms.some(t => g.name.toLowerCase().includes(t));
         }
         return true;
       });
 
-      if (sortBy === "score-desc") filtered.sort((a, b) => b.score - a.score);
-      else if (sortBy === "velocity-desc") filtered.sort((a, b) => b.velocity - a.velocity);
-      else if (sortBy === "ccu-desc") filtered.sort((a, b) => b.playing - a.playing);
-      else if (sortBy === "name-asc") filtered.sort((a, b) => a.name.localeCompare(b.name));
+      if (sortBy === "score-desc") currentFiltered.sort((a, b) => b.score - a.score);
+      else if (sortBy === "velocity-desc") currentFiltered.sort((a, b) => b.velocity - a.velocity);
+      else if (sortBy === "ccu-desc") currentFiltered.sort((a, b) => b.playing - a.playing);
+      else if (sortBy === "ccu-asc") currentFiltered.sort((a, b) => a.playing - b.playing);
+      else if (sortBy === "name-asc") currentFiltered.sort((a, b) => a.name.localeCompare(b.name));
 
       const grid = document.getElementById("games-grid");
-      if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-16">No games matching current filter</div>`;
+      const loadMoreContainer = document.getElementById("load-more-container");
+      const showingCountElem = document.getElementById("showing-count");
+
+      if (currentFiltered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-16">No games matching criteria</div>`;
+        loadMoreContainer.classList.add("hidden");
         return;
       }
 
-      grid.innerHTML = filtered.map(game => {
+      const displayList = currentFiltered.slice(0, visibleCount);
+
+      grid.innerHTML = displayList.map(game => {
         const badge = getScoreBadge(game.score);
         const isWatched = watchlist.includes(game.universe_id);
         const velSign = game.velocity > 0 ? `+${game.velocity}%` : `${game.velocity}%`;
@@ -330,7 +366,6 @@
               <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-slate-900 mb-3 border border-slate-800">
                 <img src="${game.icon_url || 'https://via.placeholder.com/150'}" alt="${game.name}" class="w-full h-full object-cover" loading="lazy" />
                 
-                <!-- Watchlist Star -->
                 <button
                   onclick="toggleWatchlist(${game.universe_id})"
                   class="absolute top-2 left-2 w-8 h-8 rounded-lg bg-black/60 backdrop-blur-md flex items-center justify-center text-xs transition ${isWatched ? 'text-amber-400' : 'text-slate-400 hover:text-white'} border border-white/10"
@@ -339,12 +374,10 @@
                   <i class="${isWatched ? 'fa-solid' : 'fa-regular'} fa-star"></i>
                 </button>
 
-                <!-- Virality Badge -->
                 <div class="absolute top-2 right-2 px-2 py-0.5 rounded ${badge.bg} text-[10px] font-black tracking-wide shadow-md">
                   ${badge.label}
                 </div>
 
-                <!-- CCU & Velocity Bar -->
                 <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
                   <div class="px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-sm text-[11px] font-semibold text-emerald-400 flex items-center gap-1.5 border border-emerald-500/20">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -378,6 +411,14 @@
           </div>
         `;
       }).join('');
+
+      // Show/Hide Load More Button
+      if (visibleCount < currentFiltered.length) {
+        loadMoreContainer.classList.remove("hidden");
+        showingCountElem.innerText = `Showing ${displayList.length.toLocaleString()} of ${currentFiltered.length.toLocaleString()} games`;
+      } else {
+        loadMoreContainer.classList.add("hidden");
+      }
     }
 
     function openAnalysisModal(game) {
@@ -394,17 +435,15 @@
       scoreBadgeElem.className = `px-2 py-0.5 rounded text-xs font-black ${badge.bg}`;
       scoreBadgeElem.innerText = badge.label;
 
-      // Direct Social Sleuth links
       const encodedName = encodeURIComponent(game.name + " roblox");
       document.getElementById("m-tiktok-link").href = `https://www.tiktok.com/search?q=${encodedName}`;
       document.getElementById("m-youtube-link").href = `https://www.youtube.com/results?search_query=${encodedName}`;
       document.getElementById("m-play-link").href = `https://www.roblox.com/games/${game.universe_id}`;
 
-      // Analysis breakdown
       const words = game.name.split(" ");
       const hasEmoji = /[\p{Emoji}]/u.test(game.name);
-      let titleAdvice = `"${game.name}" uses high-impact algorithmic framing. `;
-      if (hasEmoji) titleAdvice += `It leads with bracketed emojis (e.g. [🥚], [⚡]) to capture search clicks. `;
+      let titleAdvice = `"${game.name}" uses algorithmic framing. `;
+      if (hasEmoji) titleAdvice += `It uses front-loaded bracketed emojis to capture search impressions. `;
       titleAdvice += `The primary hook word ("${words[0]}") commands immediate player action.`;
       document.getElementById("m-title-analysis").innerText = titleAdvice;
 
@@ -431,9 +470,9 @@
       document.getElementById("game-modal").classList.add("hidden");
     }
 
-    document.getElementById("search-input").addEventListener("input", renderGames);
-    document.getElementById("filter-select").addEventListener("change", renderGames);
-    document.getElementById("sort-select").addEventListener("change", renderGames);
+    document.getElementById("search-input").addEventListener("input", resetAndRender);
+    document.getElementById("filter-select").addEventListener("change", resetAndRender);
+    document.getElementById("sort-select").addEventListener("change", resetAndRender);
 
     loadData();
   </script>
