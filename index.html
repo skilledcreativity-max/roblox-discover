@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roblox Viral Terminal | Game Dev Intelligence</title>
+  <title>Roblox Viral Terminal | Pro Game Dev Suite</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    body { background-color: #080c14; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #070a12; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     .glass-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.07); }
     .glass-card:hover { border-color: rgba(99, 102, 241, 0.5); transform: translateY(-3px); }
-    .modal-backdrop { background: rgba(4, 7, 15, 0.85); backdrop-filter: blur(8px); }
+    .modal-backdrop { background: rgba(3, 6, 14, 0.88); backdrop-filter: blur(10px); }
   </style>
 </head>
 <body class="text-slate-100 min-h-screen pb-16">
 
   <!-- Header -->
-  <header class="border-b border-slate-800/80 bg-[#0b0f19]/90 sticky top-0 z-40 backdrop-blur-md px-6 py-4">
+  <header class="border-b border-slate-800/80 bg-[#0a0e1a]/95 sticky top-0 z-40 backdrop-blur-md px-6 py-4">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div class="flex items-center space-x-3">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-500/25">
@@ -26,33 +26,36 @@
         <div>
           <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
             Roblox Viral Studio
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase tracking-widest">PRO DEV</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase tracking-widest">PRO TERMINAL</span>
           </h1>
-          <p class="text-xs text-slate-400" id="status-text">Analyzing live Roblox trends...</p>
+          <p class="text-xs text-slate-400" id="status-text">Connecting to intelligence engine...</p>
         </div>
       </div>
 
       <!-- Controls -->
       <div class="flex flex-wrap items-center gap-3">
-        <div class="relative flex-1 md:w-64">
+        <div class="relative flex-1 md:w-56">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
           <input
             id="search-input"
             type="text"
-            placeholder="Search keywords, memes..."
+            placeholder="Search titles, tags..."
             class="w-full bg-slate-900 border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         <select id="filter-select" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <option value="all">All Games</option>
+          <option value="watchlist">⭐ My Watchlist</option>
+          <option value="gems">💎 Hidden Gems (Under-the-Radar)</option>
+          <option value="fast">🚀 Fastest Growing (Velocity)</option>
           <option value="viral">🔥 Mega-Hits (9.0+ Score)</option>
-          <option value="breakout">⚡ Breakouts (7.0+ Score)</option>
           <option value="meme">🧠 Meme & Brainrot Trends</option>
         </select>
 
         <select id="sort-select" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="score-desc">Highest Viral Score (10 to 0)</option>
+          <option value="score-desc">Highest Viral Score</option>
+          <option value="velocity-desc">Highest Growth Velocity (%)</option>
           <option value="ccu-desc">Highest Live CCU</option>
           <option value="name-asc">Alphabetical (A-Z)</option>
         </select>
@@ -68,28 +71,28 @@
         <div id="stat-total-games" class="text-2xl font-bold text-white mt-1">-</div>
       </div>
       <div class="glass-card rounded-xl p-4">
-        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Live Players</div>
+        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Active Players</div>
         <div id="stat-total-ccu" class="text-2xl font-bold text-emerald-400 mt-1">-</div>
       </div>
       <div class="glass-card rounded-xl p-4">
-        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">#1 Viral Sensation</div>
-        <div id="stat-top-game" class="text-2xl font-bold text-indigo-400 truncate mt-1">-</div>
+        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Top Velocity Hit</div>
+        <div id="stat-top-grower" class="text-2xl font-bold text-emerald-400 truncate mt-1">-</div>
       </div>
       <div class="glass-card rounded-xl p-4">
-        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Avg Viral Score</div>
-        <div id="stat-avg-score" class="text-2xl font-bold text-amber-400 mt-1">-</div>
+        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Watchlist Pinned</div>
+        <div id="stat-watchlist-count" class="text-2xl font-bold text-amber-400 mt-1">0</div>
       </div>
     </div>
 
     <!-- Games Grid -->
     <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-      <div class="text-slate-400 text-sm col-span-full text-center py-24">Analyzing active games...</div>
+      <div class="text-slate-400 text-sm col-span-full text-center py-24">Loading viral intelligence feed...</div>
     </div>
   </main>
 
   <!-- Viral Analysis Modal -->
   <div id="game-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
-    <div class="bg-[#0f172a] border border-slate-700/80 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
+    <div class="bg-[#0e1424] border border-slate-700/80 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
       <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -97,30 +100,47 @@
       <div class="flex items-start gap-4 pb-5 border-b border-slate-800">
         <img id="m-icon" src="" class="w-20 h-20 rounded-xl object-cover border border-slate-700 shadow-md" />
         <div class="flex-1 pr-6">
-          <div class="flex items-center gap-2 mb-1">
+          <div class="flex items-center gap-2 mb-1 flex-wrap">
             <span id="m-score-badge" class="px-2 py-0.5 rounded text-xs font-black"></span>
-            <span id="m-ccu" class="text-xs font-semibold text-emerald-400"></span>
+            <span id="m-velocity-badge" class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"></span>
+            <span id="m-ccu" class="text-xs font-semibold text-slate-300"></span>
           </div>
           <h2 id="m-title" class="text-xl font-bold text-white leading-snug"></h2>
           <p class="text-xs text-slate-400 mt-0.5" id="m-universe-id"></p>
         </div>
       </div>
 
-      <div class="space-y-5 pt-5 text-sm">
+      <div class="space-y-4 pt-5 text-sm">
+        <!-- Direct TikTok & YouTube Viral Lookup -->
+        <div class="bg-gradient-to-r from-pink-950/30 to-purple-950/30 border border-pink-500/30 rounded-xl p-4">
+          <div class="text-xs font-bold text-pink-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+            <i class="fa-brands fa-tiktok"></i> Direct Viral Traffic Sleuth
+          </div>
+          <p class="text-xs text-slate-300 mb-3">Games go viral because of TikTok sounds and YouTube Shorts. Inspect what creators are uploading about this game:</p>
+          <div class="flex gap-2">
+            <a id="m-tiktok-link" href="#" target="_blank" class="flex-1 text-center py-2 px-3 rounded-lg bg-pink-600/30 hover:bg-pink-600/40 text-pink-300 text-xs font-semibold border border-pink-500/30 transition">
+              <i class="fa-brands fa-tiktok mr-1"></i> Search on TikTok
+            </a>
+            <a id="m-youtube-link" href="#" target="_blank" class="flex-1 text-center py-2 px-3 rounded-lg bg-red-600/30 hover:bg-red-600/40 text-red-300 text-xs font-semibold border border-red-500/30 transition">
+              <i class="fa-brands fa-youtube mr-1"></i> Search on Shorts
+            </a>
+          </div>
+        </div>
+
         <!-- Title Strategy -->
         <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800">
           <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-pen-nib"></i> Title & Hook Strategy
           </div>
-          <p id="m-title-analysis" class="text-slate-300 leading-relaxed"></p>
+          <p id="m-title-analysis" class="text-slate-300 leading-relaxed text-xs"></p>
         </div>
 
         <!-- Thumbnail & CTR Blueprint -->
         <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800">
-          <div class="text-xs font-bold text-pink-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-            <i class="fa-solid fa-image"></i> Thumbnail & Icon CTR Blueprint
+          <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-image"></i> Thumbnail CTR Blueprint
           </div>
-          <p id="m-icon-analysis" class="text-slate-300 leading-relaxed"></p>
+          <p id="m-icon-analysis" class="text-slate-300 leading-relaxed text-xs"></p>
         </div>
 
         <!-- Core Gameplay Loop -->
@@ -128,21 +148,21 @@
           <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-rotate"></i> 30-Second Retention Loop
           </div>
-          <p id="m-loop-analysis" class="text-slate-300 leading-relaxed"></p>
+          <p id="m-loop-analysis" class="text-slate-300 leading-relaxed text-xs"></p>
         </div>
 
-        <!-- How To Make Your Own Twist -->
+        <!-- Your Twist Idea -->
         <div class="bg-gradient-to-br from-indigo-950/40 via-purple-950/30 to-slate-900/80 rounded-xl p-4 border border-indigo-500/30">
-          <div class="text-xs font-bold text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+          <div class="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-lightbulb"></i> How You Can Twist This For Your Next Game
           </div>
-          <p id="m-twist-idea" class="text-slate-200 leading-relaxed"></p>
+          <p id="m-twist-idea" class="text-slate-200 leading-relaxed text-xs"></p>
         </div>
 
         <!-- Action Buttons -->
         <div class="flex gap-3 pt-2">
           <a id="m-play-link" href="#" target="_blank" class="flex-1 text-center py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition">
-            Test Game on Roblox <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+            Test Game in Roblox Studio / Client <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
           </a>
           <button onclick="closeModal()" class="py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
             Close
@@ -154,28 +174,44 @@
 
   <script>
     const SUPABASE_URL = "https://xomudftiyecfgbabditr.supabase.co";
-    // Replace with your publishable key if different
+    // Replace with your publishable key if needed
     const SUPABASE_KEY = "sb_publishable_BIGjfOud6hMu5tU8PXt0Xg_rhq-dA4F";
 
     const { createClient } = supabase;
     const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let allGames = [];
+    let watchlist = JSON.parse(localStorage.getItem("roblox_watchlist") || "[]");
 
-    // Calculate an objective 0 to 10.0 Virality Rating
-    function calculateViralScore(playing) {
-      if (playing >= 250000) return 10.0;
-      if (playing >= 100000) return 9.5 + ((playing - 100000) / 150000) * 0.4;
-      if (playing >= 40000)  return 8.5 + ((playing - 40000) / 60000) * 0.9;
-      if (playing >= 15000)  return 7.5 + ((playing - 15000) / 25000) * 0.9;
-      if (playing >= 5000)   return 6.5 + ((playing - 5000) / 10000) * 0.9;
-      if (playing >= 1000)   return 5.0 + ((playing - 1000) / 4000) * 1.4;
-      return Math.max(1.0, (playing / 1000) * 4.9);
+    function toggleWatchlist(universeId) {
+      if (watchlist.includes(universeId)) {
+        watchlist = watchlist.filter(id => id !== universeId);
+      } else {
+        watchlist.push(universeId);
+      }
+      localStorage.setItem("roblox_watchlist", JSON.stringify(watchlist));
+      updateStats();
+      renderGames();
+    }
+
+    function calculateViralScore(playing, velocity) {
+      let base = 1.0;
+      if (playing >= 250000) base = 10.0;
+      else if (playing >= 100000) base = 9.5 + ((playing - 100000) / 150000) * 0.4;
+      else if (playing >= 40000)  base = 8.5 + ((playing - 40000) / 60000) * 0.9;
+      else if (playing >= 15000)  base = 7.5 + ((playing - 15000) / 25000) * 0.9;
+      else if (playing >= 5000)   base = 6.5 + ((playing - 5000) / 10000) * 0.9;
+      else if (playing >= 1000)   base = 5.0 + ((playing - 1000) / 4000) * 1.4;
+      else base = Math.max(1.0, (playing / 1000) * 4.9);
+
+      // Boost score if velocity is surging
+      if (velocity > 50) base = Math.min(10.0, base + 0.5);
+      return base;
     }
 
     function getScoreBadge(score) {
       if (score >= 9.0) return { bg: 'bg-red-500/20 text-red-400 border border-red-500/30', label: `${score.toFixed(1)}/10 MEGA-VIRAL` };
-      if (score >= 7.5) return { bg: 'bg-purple-500/20 text-purple-300 border border-purple-500/30', label: `${score.toFixed(1)}/10 HIGH MOMENTUM` };
+      if (score >= 7.5) return { bg: 'bg-purple-500/20 text-purple-300 border border-purple-500/30', label: `${score.toFixed(1)}/10 MOMENTUM` };
       if (score >= 6.0) return { bg: 'bg-blue-500/20 text-blue-300 border border-blue-500/30', label: `${score.toFixed(1)}/10 HEALTHY` };
       return { bg: 'bg-slate-700/50 text-slate-300 border border-slate-600', label: `${score.toFixed(1)}/10 STABLE` };
     }
@@ -191,27 +227,40 @@
         const { data: games, error: gError } = await client.from("games").select("*").limit(2000);
         if (gError) throw gError;
 
+        // Fetch snapshots ordered by time
         const { data: snapshots, error: sError } = await client
           .from("game_snapshots")
           .select("universe_id, playing, recorded_at")
           .order("recorded_at", { ascending: false })
-          .limit(5000);
+          .limit(6000);
 
         if (sError) throw sError;
 
-        const latestStats = {};
+        // Group snapshots per game
+        const historyMap = {};
         snapshots.forEach(s => {
-          if (!latestStats[s.universe_id]) {
-            latestStats[s.universe_id] = s.playing;
-          }
+          if (!historyMap[s.universe_id]) historyMap[s.universe_id] = [];
+          historyMap[s.universe_id].push(s);
         });
 
         allGames = games.map(g => {
-          const ccu = latestStats[g.universe_id] || 0;
+          const list = historyMap[g.universe_id] || [];
+          const currentCCU = list.length > 0 ? list[0].playing : 0;
+          
+          // Calculate growth velocity vs previous snapshot
+          let velocity = 0;
+          if (list.length >= 2) {
+            const previousCCU = list[1].playing;
+            if (previousCCU > 0) {
+              velocity = Math.round(((currentCCU - previousCCU) / previousCCU) * 100);
+            }
+          }
+
           return {
             ...g,
-            playing: ccu,
-            score: calculateViralScore(ccu)
+            playing: currentCCU,
+            velocity: velocity,
+            score: calculateViralScore(currentCCU, velocity)
           };
         });
 
@@ -228,12 +277,14 @@
       document.getElementById("stat-total-games").innerText = allGames.length;
       const totalCCU = allGames.reduce((acc, g) => acc + g.playing, 0);
       document.getElementById("stat-total-ccu").innerText = formatNumber(totalCCU);
+      document.getElementById("stat-watchlist-count").innerText = watchlist.length;
 
-      const top = [...allGames].sort((a, b) => b.playing - a.playing)[0];
-      if (top) document.getElementById("stat-top-game").innerText = top.name;
-
-      const avg = allGames.reduce((acc, g) => acc + g.score, 0) / (allGames.length || 1);
-      document.getElementById("stat-avg-score").innerText = avg.toFixed(1) + " / 10";
+      const topGrower = [...allGames].sort((a, b) => b.velocity - a.velocity)[0];
+      if (topGrower && topGrower.velocity > 0) {
+        document.getElementById("stat-top-grower").innerText = `+${topGrower.velocity}% ${topGrower.name}`;
+      } else {
+        document.getElementById("stat-top-grower").innerText = "Tracking baseline...";
+      }
     }
 
     function renderGames() {
@@ -245,40 +296,66 @@
         const matchesSearch = g.name.toLowerCase().includes(search);
         if (!matchesSearch) return false;
 
+        if (filter === "watchlist") return watchlist.includes(g.universe_id);
+        if (filter === "gems") return g.playing >= 1000 && g.playing <= 20000;
+        if (filter === "fast") return g.velocity > 0;
         if (filter === "viral") return g.score >= 9.0;
-        if (filter === "breakout") return g.score >= 7.0 && g.score < 9.0;
         if (filter === "meme") {
-          const memeTerms = ["steal", "brainrot", "toilet", "skibidi", "egg", "blade", "rng", "tycoon", "tower", "escape"];
+          const memeTerms = ["steal", "brainrot", "toilet", "skibidi", "egg", "blade", "rng", "tycoon", "tower", "escape", "avatar"];
           return memeTerms.some(t => g.name.toLowerCase().includes(t));
         }
         return true;
       });
 
       if (sortBy === "score-desc") filtered.sort((a, b) => b.score - a.score);
+      else if (sortBy === "velocity-desc") filtered.sort((a, b) => b.velocity - a.velocity);
       else if (sortBy === "ccu-desc") filtered.sort((a, b) => b.playing - a.playing);
       else if (sortBy === "name-asc") filtered.sort((a, b) => a.name.localeCompare(b.name));
 
       const grid = document.getElementById("games-grid");
       if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-16">No games match current filter</div>`;
+        grid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-16">No games matching current filter</div>`;
         return;
       }
 
       grid.innerHTML = filtered.map(game => {
         const badge = getScoreBadge(game.score);
+        const isWatched = watchlist.includes(game.universe_id);
+        const velSign = game.velocity > 0 ? `+${game.velocity}%` : `${game.velocity}%`;
+        const velColor = game.velocity > 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-slate-400 bg-slate-800/40 border-slate-700/30';
+
         return `
-          <div class="glass-card rounded-xl p-4 flex flex-col justify-between transition-all duration-200">
+          <div class="glass-card rounded-xl p-4 flex flex-col justify-between transition-all duration-200 relative group">
             <div>
               <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-slate-900 mb-3 border border-slate-800">
                 <img src="${game.icon_url || 'https://via.placeholder.com/150'}" alt="${game.name}" class="w-full h-full object-cover" loading="lazy" />
+                
+                <!-- Watchlist Star -->
+                <button
+                  onclick="toggleWatchlist(${game.universe_id})"
+                  class="absolute top-2 left-2 w-8 h-8 rounded-lg bg-black/60 backdrop-blur-md flex items-center justify-center text-xs transition ${isWatched ? 'text-amber-400' : 'text-slate-400 hover:text-white'} border border-white/10"
+                  title="Pin to Watchlist"
+                >
+                  <i class="${isWatched ? 'fa-solid' : 'fa-regular'} fa-star"></i>
+                </button>
+
+                <!-- Virality Badge -->
                 <div class="absolute top-2 right-2 px-2 py-0.5 rounded ${badge.bg} text-[10px] font-black tracking-wide shadow-md">
                   ${badge.label}
                 </div>
-                <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-sm text-[11px] font-semibold text-emerald-400 flex items-center gap-1.5 border border-emerald-500/20">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  ${formatNumber(game.playing)} CCU
+
+                <!-- CCU & Velocity Bar -->
+                <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                  <div class="px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-sm text-[11px] font-semibold text-emerald-400 flex items-center gap-1.5 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    ${formatNumber(game.playing)} CCU
+                  </div>
+                  <div class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${velColor}">
+                    ${velSign}
+                  </div>
                 </div>
               </div>
+
               <h3 class="font-bold text-white text-sm line-clamp-1 mb-1" title="${game.name}">${game.name}</h3>
               <p class="text-xs text-slate-400 mb-3">${game.genre || 'Roblox Experience'}</p>
             </div>
@@ -303,47 +380,49 @@
       }).join('');
     }
 
-    // Reverse-engineer any game dynamically
     function openAnalysisModal(game) {
       document.getElementById("m-icon").src = game.icon_url || 'https://via.placeholder.com/150';
       document.getElementById("m-title").innerText = game.name;
-      document.getElementById("m-universe-id").innerText = `Place ID: ${game.universe_id} • Tracked via Rolimons API`;
-      document.getElementById("m-ccu").innerText = `${formatNumber(game.playing)} concurrent players`;
+      document.getElementById("m-universe-id").innerText = `Place ID: ${game.universe_id} • Tracked Live`;
+      document.getElementById("m-ccu").innerText = `${formatNumber(game.playing)} CCU`;
+
+      const velSign = game.velocity > 0 ? `+${game.velocity}% Growth` : `${game.velocity}% Growth`;
+      document.getElementById("m-velocity-badge").innerText = velSign;
 
       const badge = getScoreBadge(game.score);
       const scoreBadgeElem = document.getElementById("m-score-badge");
       scoreBadgeElem.className = `px-2 py-0.5 rounded text-xs font-black ${badge.bg}`;
       scoreBadgeElem.innerText = badge.label;
 
+      // Direct Social Sleuth links
+      const encodedName = encodeURIComponent(game.name + " roblox");
+      document.getElementById("m-tiktok-link").href = `https://www.tiktok.com/search?q=${encodedName}`;
+      document.getElementById("m-youtube-link").href = `https://www.youtube.com/results?search_query=${encodedName}`;
       document.getElementById("m-play-link").href = `https://www.roblox.com/games/${game.universe_id}`;
 
-      // 1. Title Analysis
+      // Analysis breakdown
       const words = game.name.split(" ");
       const hasEmoji = /[\p{Emoji}]/u.test(game.name);
-      let titleAdvice = `"${game.name}" uses high-impact framing. `;
-      if (hasEmoji) titleAdvice += `It uses bracketed emojis (e.g. [🥚], [🔥], [NEW]) at the very start to catch eyes immediately in the Roblox search algorithm. `;
-      titleAdvice += `Notice it uses a simple, immediate action verb or recognizable meme/trope (${words[0] || 'Action'}) that requires 0 seconds to understand for younger players.`;
+      let titleAdvice = `"${game.name}" uses high-impact algorithmic framing. `;
+      if (hasEmoji) titleAdvice += `It leads with bracketed emojis (e.g. [🥚], [⚡]) to capture search clicks. `;
+      titleAdvice += `The primary hook word ("${words[0]}") commands immediate player action.`;
       document.getElementById("m-title-analysis").innerText = titleAdvice;
 
-      // 2. Icon CTR Strategy
       document.getElementById("m-icon-analysis").innerText = 
-        `High Click-Through-Rate (CTR) rules used here:\n` +
-        `• 3-Color Contrast Rule: Bright neon foreground on dark/contrasting background.\n` +
-        `• Single Focus Subject: The character/object occupies >60% of the square canvas.\n` +
-        `• High-Emotion Hook: Shows action happening mid-motion (holding loot, running, or flexing a pet/sword), forcing the player to click to see the result.`;
+        `• 3-Color Contrast Rule: Neon primary character rendered over a dark, high-depth scene.\n` +
+        `• 65%+ Subject Rule: The central character or prize occupies more than two-thirds of the icon frame.\n` +
+        `• Action Freeze-Frame: The thumbnail captures a moment of active tension (holding loot or escaping danger).`;
 
-      // 3. 30-Second Retention Loop
       document.getElementById("m-loop-analysis").innerText = 
-        `1. First 10 Seconds: Player spawns and gets a button click or loot item with instant feedback (sound effect + particle confetti).\n` +
-        `2. Next 30 Seconds: Clear visible upgrade bar (e.g. "Get to 100 Eggs to Unlock World 2").\n` +
-        `3. Social Flex: Leaderboard or visible pet/title above the player's head, encouraging them to keep grinding or invite a friend.`;
+        `1. Seconds 0-10: Player spawns directly in the action with zero text tutorial.\n` +
+        `2. Seconds 10-45: First upgrade or unlock is achieved within under a minute.\n` +
+        `3. Ongoing Hook: Leaderboard status or overhead titles display progress to other players in the server.`;
 
-      // 4. Your Twist Idea
       const baseTopic = words[1] || words[0] || "Brainrot";
       document.getElementById("m-twist-idea").innerHTML = 
-        `Want to beat your 280k visit record? Here is an actionable spin-off formula:\n\n` +
-        `• <b>Suggested Title:</b> [⚡] Steal The ${baseTopic} OR [SECRET] Escape The ${baseTopic}\n` +
-        `• <b>The Twist:</b> Keep the core objective of this game, but add an RNG trading element (e.g. 1 in 500 chance to get a "Neon Gold" version) and a TikTok/Shorts-friendly sound effect every time you open or steal an item.`;
+        `To beat your 280k visit record with a twist on this concept:\n\n` +
+        `• <b>Suggested Working Title:</b> [⚡] Steal The ${baseTopic} OR [SECRET] Escape The ${baseTopic}\n` +
+        `• <b>The Twist:</b> Keep the core loop, but add a 1-in-1,000 "Secret Rare" aura or item drop with custom particle effects and a TikTok-friendly sound effect.`;
 
       document.getElementById("game-modal").classList.remove("hidden");
     }
